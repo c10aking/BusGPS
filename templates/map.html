@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Location Tracker</title>
+    <!-- 지도 API 추가 (구글맵) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0pwXKqWSAvxOj6DulXvdYSmoTeDGUPHY"></script>
+    <script>
+        let map;
+
+        // 지도 초기화
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 37.5665, lng: 126.9780 }, // 서울 중심 좌표
+                zoom: 12
+            });
+        }
+
+        // 버스 위치 데이터 가져와서 지도에 표시
+        function loadBusLocations() {
+            const routeId = document.getElementById("routeId").value;
+
+            fetch(`/api/bus-locations/?route_id=${routeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // 기존 마커 제거
+                        mapMarkers.forEach(marker => marker.setMap(null));
+                        mapMarkers = [];
+
+                        // 새 마커 추가
+                        data.buses.forEach(bus => {
+                            const marker = new google.maps.Marker({
+                                position: { lat: bus.latitude, lng: bus.longitude },
+                                map: map,
+                                title: `Bus: ${bus.vehicle_number}`
+                            });
+                            mapMarkers.push(marker);
+                        });
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error("Error fetching bus locations:", error));
+        }
+
+        let mapMarkers = [];  // 지도에 표시된 마커 목록
+        window.onload = initMap;
+    </script>
+</head>
+<body>
+    <h1>Real-time Bus Location Tracking</h1>
+    <div>
+        <label for="routeId">Bus Route ID:</label>
+        <input type="text" id="routeId" placeholder="Enter Route ID">
+        <button onclick="loadBusLocations()">Load Bus Locations</button>
+    </div>
+    <div id="map" style="width: 100%; height: 600px;"></div>
+</body>
+</html>
