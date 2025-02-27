@@ -6,7 +6,7 @@ from django.shortcuts import render
 logger = logging.getLogger(__name__)
 
 def fetch_bus_locations(request):
-    service_key = "lzJ2wnHnExF6MY0CnMMjpvfMAw0Oyr4VnTQLUABye0p1P7s42ii54Ub/jNTM5l2WFmxp+0F5ALC2jRAItbYNzQ=="  # 디코딩된 API 키
+    service_key = "APIkey"  # 디코딩된 API 키
     route_number = request.GET.get('route_id')  # 사용자가 입력한 노선 번호
 
     if not route_number:
